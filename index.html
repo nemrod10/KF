@@ -200,6 +200,8 @@
       <span id="curseur_txt"></span>
     </div>
   </div>
+   <div id="aps-breakpoint" style="display:none; margin:20px 0 0 0; font-size:15px; font-weight:bold; color:#337ab7;">
+  </div>
   <div class="info-message" id="info-message" style="display:none;"></div>
   <script>
 function round(val, dec=4) { return Math.round(val*10**dec)/10**dec; }
@@ -243,6 +245,12 @@ function calculSalvo() {
   if(pos_curseur > 800) pos_curseur = 800;
   curseur.style.left = pos_curseur +"px";
   curseur_txt.innerText = `Atk Time joueur : ${player_atk_time}s`;
+  
+  // Affichage APS breakpoint avec arrondi inférieur à 2 décimales
+const apsDiv = document.getElementById('aps-breakpoint');
+apsDiv.style.display = '';
+const target_speed_display = Math.floor(target_speed * 100) / 100;
+apsDiv.innerHTML = `Your closest APS breakpoint is <span style="color:#169e41">${target_speed_display}</span> attack per second`;
 
   // Placement dynamique des labels
   const lblRed = document.getElementById('label-red');

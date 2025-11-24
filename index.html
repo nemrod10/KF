@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculateur de Salve PoE</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #fafafa; padding: 20px; }
+    .input-row { margin-bottom: 12px; display: flex; align-items: center; }
+    label { width: 220px; display: inline-block; }
+    input { width: 60px; padding: 5px; }
+    button { margin-top: 12px; }
+    .results { margin-top: 24px; border-top: 1px solid #bbb; padding-top: 16px; }
+
+    .bar-container { position: relative; height: 78px; width: 800px; margin-bottom: 12px; margin-top: 32px; }
+    .echelle-color { width: 100%; height: 20px; border-radius: 8px; margin-bottom: 0; }
+
+    .bar-red {
+      background: linear-gradient(to right, #dd3333 0%, #dd3333 var(--pct-red), #ffaa00 var(--pct-red), #ffaa00 var(--pct-orange), #46be7c var(--pct-orange), #46be7c 100%);
+    }
+
+    .curseur {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 78px;
+      width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      pointer-events: none;
+    }
+    .curseur-arrow {
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 18px solid #444;
+      margin-bottom: 0;
+      margin-top: 0;
+    }
+    .curseur span {
+      position: absolute;
+      left: -30px;
+      top: 42px;
+      background: #222;
+      color: #fff;
+      font-size: 12px;
+      border-radius: 6px;
+      padding: 2px 7px;
+      white-space: nowrap;
+    }
+    .labels-setup { 
+      width: 800px; 
+      display: flex; 
+      justify-content: space-between; 
+      font-size: 13px; 
+      font-weight: bold;
+      position: absolute; 
+      top: 0; 
+      left: 0;
+      pointer-events: none;
+      user-select: none;
+      height: 20px;
+    }
+    .label-red   { color: #dd3333; margin-left: 4px;}
+    .label-orange { color: #ffaa00; text-align: center;}
+    .label-green { color: #46be7c; margin-right: 4px;}
+
+    .info-message {
+      margin-top: 24px;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: left;
+      padding: 12px;
+      border-radius: 8px;
+      background: #f9f7ef;
+      border: 1px solid #ccc;
+    }
+    .info-warning { color: #c40e0e; border-color: #c40e0e; background: #ffecec; }
+    .info-orange { color: #b48600; border-color: #ffaa00; background: #fffbe2; }
+    .info-green { color: #1b814d; border-color: #46be7c; background: #eafaf1; }
+
+    .help-icon {
+      display: inline-block;
+      width: 19px;
+      height: 19px;
+      border-radius: 50%;
+      background: #337ab7;
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+      line-height: 19px;
+      margin-left: 9px;
+      cursor: pointer;
+      position: relative;
+      font-size: 14px;
+      transition: background 0.2s;
+      box-shadow: 0 1px 3px #999;
+    }
+    .help-icon:hover {
+      background: #286090;
+    }
+    .help-bubble {
+      display: none;
+      position: absolute;
+      top: 25px;
+      left: -40px;
+      z-index: 999;
+      background: #fff;
+      border: 1.7px solid #337ab7;
+      padding: 7px;
+      border-radius: 7px;
+      box-shadow: 0 2px 7px #9997;
+      min-width: 400px;
+      text-align: center;
+    }
+    .help-bubble img { max-width: 600px; max-height: 600px;}
+  </style>
+</head>
+<body>
+  <h2>Calculateur Salvo PoE (Beta)</h2>
+  <p>Hover the ? button to see where you can find informations on PoB (all is in calculation page)</p>
+  <form id="calc-form">
+    <div class="input-row">
+      <label>Number of Projectiles :</label> 
+      <input type="number" id="A" value="12">
+      <span class="help-icon" 
+        onmouseenter="showHelp(this)" 
+        onmouseleave="hideHelp(this)">?
+        <span class="help-bubble"><img src="proj.png" alt="Trouver Projectiles"></span>
+      </span>
+    </div>
+    <div class="input-row">
+      <label>Reduce duration (B) :</label>
+      <input type="number" id="B" value="0.25" step="0.01">
+      <span class="help-icon" 
+        onmouseenter="showHelp(this)" 
+        onmouseleave="hideHelp(this)">?
+        <span class="help-bubble"><img src="reduc_dura.png" alt="Trouver Reduce Duration"></span>
+      </span>
+    </div>
+    <div class="input-row">
+      <label>Less duration (C) :</label>
+      <input type="number" id="C" value="0.4" step="0.01">
+      <span class="help-icon" 
+        onmouseenter="showHelp(this)" 
+        onmouseleave="hideHelp(this)">?
+        <span class="help-bubble"><img src="less_dura.png" alt="Trouver Less Duration"></span>
+      </span>
+    </div>
+    <div class="input-row">
+      <label>Attack speed actuelle (D) :</label>
+      <input type="number" id="D" value="8.51" step="0.01">
+      <span class="help-icon" 
+        onmouseenter="showHelp(this)" 
+        onmouseleave="hideHelp(this)">?
+        <span class="help-bubble"><img src="aps.png" alt="Trouver Attack Speed actuelle"></span>
+      </span>
+    </div>
+    <div class="input-row">
+      <label>% Increased atk speed (E) :</label>
+      <input type="number" id="E" value="151" step="0.01">
+      <span class="help-icon" 
+        onmouseenter="showHelp(this)" 
+        onmouseleave="hideHelp(this)">?
+        <span class="help-bubble"><img src="inc_aps.png" alt="Trouver Increased Attack Speed"></span>
+      </span>
+    </div>
+    <div class="input-row">
+      <label>% More atk speed (F) :</label>
+      <input type="number" id="F" value="0" step="0.01">
+      <span class="help-icon" 
+        onmouseenter="showHelp(this)" 
+        onmouseleave="hideHelp(this)">?
+        <span class="help-bubble"><img src="more_aps.png" alt="Trouver More Attack Speed"></span>
+      </span>
+    </div>
+    <div class="input-row">
+      <label>% More action speed (G) :</label>
+      <input type="number" id="G" value="1.06" step="0.01">
+      <span class="help-icon" 
+        onmouseenter="showHelp(this)" 
+        onmouseleave="hideHelp(this)">?
+        <span class="help-bubble"><img src="action_speed.png" alt="Trouver More Action Speed"></span>
+      </span>
+    </div>
+    <button type="button" onclick="calculSalvo()">Calculer</button>
+  </form>
+  <div style="height: 12px;"></div>
+
+  <div class="bar-container" id="bar-zone" style="display:none;">
+    <div class="labels-setup" id="labels-setup">
+      <div class="label-red" id="label-red">no machine gun</div>
+      <div class="label-orange" id="label-orange">imperfect machine gun</div>
+      <div class="label-green" id="label-green">Perfect setup</div>
+    </div>
+    <div class="echelle-color bar-red" id="salvo-bar"></div>
+    <div class="curseur" id="curseur">
+      <div class="curseur-arrow"></div>
+      <span id="curseur_txt"></span>
+    </div>
+  </div>
+  <div class="info-message" id="info-message" style="display:none;"></div>
+  <script>
+function round(val, dec=4) { return Math.round(val*10**dec)/10**dec; }
+function ceil(val) { return Math.ceil(Math.abs(val)); }
+function floor(val) { return Math.floor(Math.abs(val)); }
+
+function calculSalvo() {
+  // lire champs
+  const A = parseFloat(document.getElementById('A').value);
+  const B = parseFloat(document.getElementById('B').value);
+  const C = parseFloat(document.getElementById('C').value);
+  const D = parseFloat(document.getElementById('D').value);
+  const E = parseFloat(document.getElementById('E').value);
+  const F = parseFloat(document.getElementById('F').value);
+  const G = parseFloat(document.getElementById('G').value);
+
+  const duration_mod = round(B * C);
+  const hovering_time = round(0.7 * duration_mod);
+  const firing_time = round(0.05 * duration_mod * A);
+  const salvo_time = round(firing_time + hovering_time);
+  const target_speed = round(1 / salvo_time);
+  const player_atk_time = round(1 / D);
+  const base_atk_speed = round(D / (1 + E/100) / (1 + F/100) / G);
+  const new_inc_aps = round(((target_speed / (base_atk_speed * (1 + F/100) * G)) - 1) * 100); 
+  const modificateur_aps = round(new_inc_aps - E);
+
+  document.getElementById('bar-zone').style.display = '';
+  const bar = document.getElementById('salvo-bar');
+  const max_bar = round(salvo_time + 0.1);
+  const pct_red = (hovering_time / max_bar) * 100;
+  const pct_orange = (salvo_time / max_bar) * 100;
+  bar.style.setProperty('--pct-red', pct_red + '%');
+  bar.style.setProperty('--pct-orange', pct_orange + '%');
+  bar.title = `Rouge : 0–${hovering_time}s | Orange : ${hovering_time}–${salvo_time}s | Vert : ${salvo_time}–${max_bar}s`;
+
+  // Curseur atk time
+  const curseur = document.getElementById('curseur');
+  const curseur_txt = document.getElementById('curseur_txt');
+  let pos_curseur = (player_atk_time / max_bar) * 800;
+  if(pos_curseur < 0) pos_curseur = 0;
+  if(pos_curseur > 800) pos_curseur = 800;
+  curseur.style.left = pos_curseur +"px";
+  curseur_txt.innerText = `Atk Time joueur : ${player_atk_time}s`;
+
+  // Placement dynamique des labels
+  const lblRed = document.getElementById('label-red');
+  const lblOrange = document.getElementById('label-orange');
+  const lblGreen = document.getElementById('label-green');
+  lblRed.style.position = "absolute";
+  lblRed.style.left = "2px";
+  lblRed.style.top = "22px";
+  lblOrange.style.position = "absolute";
+  lblOrange.style.left = (pct_red * 8 + 2) + "px";
+  lblOrange.style.top = "22px";
+  lblGreen.style.position = "absolute";
+  lblGreen.style.left = (pct_orange * 8 + 2) + "px";
+  lblGreen.style.top = "22px";
+
+  // Info conditionnelle
+  let info = "";
+  let infoClass = "";
+  if (player_atk_time < hovering_time) {
+    info = 
+      `⚠️ Warning: No machine gun, you need to remove <b>${ceil(modificateur_aps)}%</b> of increased attack speed.<br>
+      You can also try to take more reduce skill effect duration or reduce action speed.`;
+    infoClass = "info-warning";
+  } else if (player_atk_time < salvo_time) {
+    info = 
+      `⚠️ You have a bit too much APS to have a perfect setup.<br>
+      You need to remove <b>${ceil(modificateur_aps)}%</b> of increased attack speed.<br>
+      You can also reduce a bit more atk speed, action speed or take a bit more of reduce skill duration and try calculate again.`;
+    infoClass = "info-orange";
+  } else {
+    info = 
+      `✅ You have a good setup.<br>
+      You can add <b>${floor(modificateur_aps)}%</b> of increased attack speed to min max dps, but no more!`;
+    infoClass = "info-green";
+  }
+  const infoDiv = document.getElementById('info-message');
+  infoDiv.style.display = '';
+  infoDiv.className = 'info-message ' + infoClass;
+  infoDiv.innerHTML = info;
+}
+
+// Aide au survol
+function showHelp(el) {
+  const bubble = el.querySelector('.help-bubble');
+  if (bubble) bubble.style.display = 'block';
+}
+function hideHelp(el) {
+  const bubble = el.querySelector('.help-bubble');
+  if (bubble) bubble.style.display = 'none';
+}
+  </script>
+</body>
+</html>

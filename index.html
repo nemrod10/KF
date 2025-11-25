@@ -348,7 +348,7 @@
       </span>
     </div>
 	<h3>Usefull information for min-maxing</h3>
-	<p>If you change those values after first calculation, you need to check PoB to have your new attack speed and make a new calcul.</p>
+	<p>If you change those values after first calculation, you need to check PoB to have your new attack speed and make a new calcul. This part is only needed to help you fine tuning your atk speed after calculation.</p>
     <div class="input-row">
       <label>% Increased atk speed :</label>
       <input type="number" id="E" value="151" step="0.01">
@@ -376,7 +376,10 @@
         <span class="help-bubble"><img src="action_speed.png" alt="Trouver More Action Speed"></span>
       </span>
     </div>
-    <button type="button" onclick="calculSalvo()">Calculate</button>
+	  <h3>Disclamer and thanks: </h3>
+	  <p>This calculator is pretty accurate. But notice that : i took a small margin of security for rounded values. Results in game may be a bit different accordind to your network setup (ping, predictive/lockstep, packet loss...)</p>
+      <p>Big thanks to <strong>Cowin13</strong> who made a lot of poison testing for me. Thanks to <strong>ThisIsProphet</strong> for his tests too, it helped me a lot inderectly. And Thanks to all of you for all your messages.</p>  
+	  <button type="button" onclick="calculSalvo()">Calculate</button>
   </form>
   <div style="height: 12px;"></div>
 
@@ -515,7 +518,7 @@ apsDiv.innerHTML = `Your closest APS breakpoint is <span style="color:#169e41">$
   } else if (player_atk_time < salvo_time) {
     info = 
       `⚠️ You have a bit too much APS to have a perfect setup.<br>
-	  You lose <b>${missing_projectile}</b> projectile(s) with your actual APS.<br>
+	  You may lose up to <b>${missing_projectile}</b> projectile(s) per fire with your actual APS.<br>
       You need to remove <b>${ceil(modificateur_aps)}%</b> of increased attack speed.<br>
       You can also reduce a bit "more atk speed", "action speed" or take some additionnal reduce skill duration and try calculate again.`;
     infoClass = "info-orange";

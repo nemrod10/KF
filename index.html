@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -136,21 +137,18 @@
     /* --- barre --- */
     .bar-container {
       position: relative;
-      height: 87px;
-      width: 800px;
-      margin: 32px auto 10px auto;
-      border-radius: 16px;
-       background: transparent;   /* Suppression du fond/orange sur la barre */
-  box-shadow: none;
-  border: none;
+      width: 100%;
+      max-width: 800px;
+      margin: 40px auto 0 auto;
+      min-height: 70px;
     }
     .echelle-color {
       width: 100%;
-      height: 24px;
+      height: 22px;
       border-radius: 8px;
-      margin-bottom: 40px;
-      box-shadow: 0 2px 12px #ae864877 inset;
-      border: 1.7px solid #b48626;
+      background: #333;
+      display: block;
+      border: 1px solid #b88e54;
     }
     .bar-red {
       background: linear-gradient(to right, #dd3333 0%, #dd3333 var(--pct-red), #ffaa00 var(--pct-red), #ffaa00 var(--pct-orange), #46be7c var(--pct-orange), #46be7c 100%);
@@ -194,24 +192,18 @@
     
     .curseur {
       position: absolute;
-      left: 0;
       top: 0;
-      height: 87px;
+      height: 70px;
       width: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      pointer-events: none;
+      pointer-events:none;
     }
     .curseur-arrow {
       width: 0;
       height: 0;
       border-left: 9px solid transparent;
       border-right: 9px solid transparent;
-      border-top: 18px solid #FFD700;
-      margin-bottom: 0;
-      margin-top: 0;
-      filter: drop-shadow(0 0 5px #FFD700aa);
+      border-top: 18px solid #ffd700;
+      filter: drop-shadow(0 0 10px #ffd70099);
     }
     .curseur span {
       position: absolute;
@@ -469,6 +461,8 @@ function calculSalvo() {
 
   document.getElementById('bar-zone').style.display = '';
   const bar = document.getElementById('salvo-bar');
+  const barElem = document.getElementById('salvo-bar');
+  const barWidth = barElem.offsetWidth || 800;
   const max_bar = round(salvo_time + 0.1);
   const pct_red = (hovering_time / max_bar) * 100;
   const pct_orange = (salvo_time / max_bar) * 100;
@@ -479,9 +473,9 @@ function calculSalvo() {
   // Curseur atk time
   const curseur = document.getElementById('curseur');
   const curseur_txt = document.getElementById('curseur_txt');
-  let pos_curseur = (player_atk_time / max_bar) * 800;
+  let pos_curseur = (player_atk_time / max_bar) * barWidth;
   if(pos_curseur < 0) pos_curseur = 0;
-  if(pos_curseur > 800) pos_curseur = 800;
+  if(pos_curseur > barWidth) pos_curseur = barWidth;
   curseur.style.left = pos_curseur +"px";
   curseur_txt.innerText = `Player Atk Time : ${player_atk_time}s`;
   
@@ -553,7 +547,8 @@ function hideHelp(el) {
   const bubble = el.querySelector('.help-bubble');
   if (bubble) bubble.style.display = 'none';
 }
-
+window.addEventListener('resize', calculSalvo);
+window.addEventListener('DOMContentLoaded', calculSalvo);
   </script>
 </body>
 </html>

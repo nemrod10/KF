@@ -468,7 +468,7 @@ function calculSalvo() {
   const bar = document.getElementById('salvo-bar');
   const barElem = document.getElementById('salvo-bar');
   const barWidth = barElem.offsetWidth || 800;
-  const max_bar = round(salvo_time + 0.1);
+  const max_bar = round(salvo_time + 0.05);
   const pct_red = (hovering_time / max_bar) * 100;
   const pct_orange = (salvo_time / max_bar) * 100;
   bar.style.setProperty('--pct-red', pct_red + '%');
@@ -478,7 +478,7 @@ function calculSalvo() {
   // Curseur atk time
   const curseur = document.getElementById('curseur');
   const curseur_txt = document.getElementById('curseur_txt');
-  let pos_curseur = (player_atk_time / max_bar) * barWidth;
+  let pos_curseur = (player_atk_time / max_bar) * barWidth - 9;
   if(pos_curseur < 0) pos_curseur = 0;
   if(pos_curseur > barWidth) pos_curseur = barWidth;
   curseur.style.left = pos_curseur +"px";

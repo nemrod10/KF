@@ -164,6 +164,7 @@
       font-size: 15px; 
 	  margin-top: 5px;
 	  margin-bottom: 10px;
+	  padding: 0 22px;
       font-weight: bold;
       position: absolute; 
       top: 0;
@@ -172,9 +173,24 @@
       user-select: none;
       height: 25px;
     }
-    .label-red   { color: #dd3333; margin-left: 4px; text-shadow: 0 1px 6px #221;}
-    .label-orange { color: #ffaa00; text-align: center;}
-    .label-green { color: #46be7c; margin-right: 4px;}
+    .label-red   { color: #dd3333; margin-left: 4px; text-shadow: 0 1px 6px #221;font-weight: bold;
+  font-size: 12px;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;}
+    .label-orange { color: #ffaa00; text-align: center;font-weight: bold;
+  font-size: 12px;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;}
+    .label-green { color: #46be7c; margin-right: 4px;font-weight: bold;
+  font-size: 12px;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;}
     
     .curseur {
       position: absolute;
@@ -374,8 +390,8 @@
 
   <div class="bar-container" id="bar-zone" style="display:none;">
     <div class="labels-setup" id="labels-setup">
-      <div class="label-red" id="label-red">no machine gun</div>
-      <div class="label-orange" id="label-orange">imperfect machine gun</div>
+      <div class="label-red" id="label-red">No machine gun</div>
+      <div class="label-orange" id="label-orange">Imperfect setup</div>
       <div class="label-green" id="label-green">Perfect setup</div>
     </div>
     <div class="echelle-color bar-red" id="salvo-bar"></div>
@@ -401,6 +417,35 @@
 function round(val, dec=4) { return Math.round(val*10**dec)/10**dec; }
 function ceil(val) { return Math.ceil(Math.abs(val)); }
 function floor(val) { return Math.floor(Math.abs(val)); }
+
+const barWidth = 800;
+
+const redWidth = (pct_red / 100) * barWidth;
+const orangeWidth = ((pct_orange - pct_red) / 100) * barWidth;
+const greenWidth = ((100 - pct_orange) / 100) * barWidth;
+
+// Labels centrés et largeur limitée
+lblRed.style.position = "absolute";
+lblRed.style.left = (redWidth * 0.5 - 80) + "px";      // Centre dans zone rouge, décale pour la largeur
+lblRed.style.width = (redWidth - 20) + "px";
+lblRed.style.textAlign = "center";
+lblRed.style.overflow = "hidden";
+lblRed.style.whiteSpace = "nowrap";
+
+lblOrange.style.position = "absolute";
+lblOrange.style.left = (redWidth + orangeWidth * 0.5 - 80) + "px"; // Centre dans zone orange
+lblOrange.style.width = (orangeWidth + 20) + "px";
+lblOrange.style.textAlign = "center";
+lblOrange.style.overflow = "hidden";
+lblOrange.style.whiteSpace = "nowrap";
+
+lblGreen.style.position = "absolute";
+lblGreen.style.left = (redWidth + orangeWidth + greenWidth * 0.5 - 80) + "px"; // Centre dans zone verte
+lblGreen.style.width = (greenWidth - 20) + "px";
+lblGreen.style.textAlign = "center";
+lblGreen.style.overflow = "hidden";
+lblGreen.style.whiteSpace = "nowrap";
+
 
 function calculSalvo() {
   // lire champs
@@ -508,6 +553,7 @@ function hideHelp(el) {
   const bubble = el.querySelector('.help-bubble');
   if (bubble) bubble.style.display = 'none';
 }
+
   </script>
 </body>
 </html>

@@ -458,6 +458,7 @@ function calculSalvo() {
   const base_atk_speed = round(D / (1 + E/100) / (1 + F/100) / G);
   const new_inc_aps = round(((target_speed / (base_atk_speed * (1 + F/100) * G)) - 1) * 100); 
   const modificateur_aps = round(new_inc_aps - E);
+  const missing_projectile = Math.ceil((salvo_time - player_atk_time) / (0.05 * duration_mod));
 
   document.getElementById('bar-zone').style.display = '';
   const bar = document.getElementById('salvo-bar');
@@ -514,6 +515,7 @@ apsDiv.innerHTML = `Your closest APS breakpoint is <span style="color:#169e41">$
   } else if (player_atk_time < salvo_time) {
     info = 
       `⚠️ You have a bit too much APS to have a perfect setup.<br>
+	  You lose <b>${missing_projectile}</b> projectile(s) with your actual APS.<br>
       You need to remove <b>${ceil(modificateur_aps)}%</b> of increased attack speed.<br>
       You can also reduce a bit "more atk speed", "action speed" or take some additionnal reduce skill duration and try calculate again.`;
     infoClass = "info-orange";

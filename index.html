@@ -115,6 +115,34 @@
       text-align: center;
     }
     .help-bubble img { max-width: 600px; max-height: 600px;}
+	/* ... autres styles ... */
+    .animation-congrats {
+      pointer-events: none;
+      position: fixed;
+      top: 30%;
+      left: 45vw;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .info-congrats {
+      color: #1b814d;
+      background: #eafaf1;
+      border: 2px solid #46be7c;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 2px 7px #9997;
+      margin-top: 18px;
+      display: block;
+      animation: pulse 1.2s infinite alternate;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 2px 7px #46be7c55; transform: scale(1);}
+      100% { box-shadow: 0 4px 14px #46be7c99; transform: scale(1.04);}
+    }
   </style>
 </head>
 <body>
@@ -206,6 +234,16 @@
    <div id="aps-breakpoint" style="display:none; margin:20px 0 0 0; font-size:15px; font-weight:bold; color:#337ab7;">
   </div>
   <div class="info-message" id="info-message" style="display:none;"></div>
+  <div id="congratsAnimation" class="animation-congrats" style="opacity:0;">
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <circle cx="20" cy="40" r="7" fill="#ffb700"><animate attributeName="cy" values="40;80;120" dur="2s" repeatCount="indefinite" /></circle>
+      <circle cx="80" cy="15" r="6" fill="#1bc47d"><animate attributeName="cy" values="15;75;120" dur="2s" repeatCount="indefinite" /></circle>
+      <circle cx="55" cy="60" r="5" fill="#f84f7c"><animate attributeName="cy" values="60;100;120" dur="2s" repeatCount="indefinite" /></circle>
+      <rect x="95" y="10" width="8" height="8" fill="#3584e7"><animate attributeName="y" values="10;70;120" dur="2s" repeatCount="indefinite" /></rect>
+      <rect x="30" y="70" width="6" height="6" fill="#e6750a"><animate attributeName="y" values="70;100;120" dur="2s" repeatCount="indefinite" /></rect>
+    </svg>
+  </div>
+
   <script>
 function round(val, dec=4) { return Math.round(val*10**dec)/10**dec; }
 function ceil(val) { return Math.ceil(Math.abs(val)); }
@@ -269,10 +307,14 @@ apsDiv.innerHTML = `Your closest APS breakpoint is <span style="color:#169e41">$
   lblGreen.style.left = (pct_orange * 8 + 2) + "px";
   lblGreen.style.top = "22px";
 
-  // Info conditionnelle
+  // Info conditionnelle avec detection égalité
   let info = "";
   let infoClass = "";
-  if (player_atk_time < hovering_time) {
+  let congrats = false;
+  if (Math.abs(player_atk_time - salvo_time) < 0.0001) {
+    info = `<span class="info-congrats">🎉 Congratulations, your setup is perfect! 🎉</span>`;
+    congrats = true;
+  } else if (player_atk_time < hovering_time) {
     info = 
       `⚠️ Warning: No machine gun, you need to remove <b>${ceil(modificateur_aps)}%</b> of increased attack speed.<br>
       You can also try to take more reduce skill effect duration or reduce action speed.`;
@@ -293,6 +335,15 @@ apsDiv.innerHTML = `Your closest APS breakpoint is <span style="color:#169e41">$
   infoDiv.style.display = '';
   infoDiv.className = 'info-message ' + infoClass;
   infoDiv.innerHTML = info;
+
+  // Animation congrats
+  const animation = document.getElementById('congratsAnimation');
+  if (congrats) {
+    animation.style.opacity = 1;
+    setTimeout(() => { animation.style.opacity = 0; }, 2000);
+  } else {
+    animation.style.opacity = 0;
+  }
 }
 
 // Aide au survol
